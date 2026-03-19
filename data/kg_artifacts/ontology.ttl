@@ -1,0 +1,14 @@
+@prefix myonto: <http://mycustomkb.org/ontology/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+myonto:NewEntity rdfs:subClassOf myonto:Gpe,
+        myonto:Org,
+        myonto:Person .
+
+myonto:Gpe a owl:Class .
+
+myonto:Org a owl:Class .
+
+myonto:Person a owl:Class .
+

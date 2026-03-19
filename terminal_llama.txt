@@ -1,0 +1,456 @@
+PS C:\Users\gabri\Web> py lab_rag_sparql_gen.py    
+============================================================
+🤖 Semantic RAG Chatbot - Initialisation
+============================================================
+[*] Chargement du Knowledge Graph depuis expanded_kb.nt...
+[*] Graphe chargé avec 72356 triplets.
+[*] Extraction du schéma (Prédicats et Classes)...
+
+Le système est prêt. Tapez 'exit' ou 'quit' pour quitter.
+============================================================
+
+> Posez votre question : List all the organizations present in the knowledge graph.
+
+--- BASELINE (LLM pur sans RAG) ---
+I'm sorry, but I don't have direct access to external information such as a knowledge graph. However, I can tell you that there are many organizations represented in a knowledge graph, including:
+
+* Government agencies
+* Companies (e.g., Apple, Google)
+* Non-profit organizations
+* Academic institutions
+* Media outlets
+* Research centers
+* Educational institutions
+
+These organizations can be represented using various types of entities, such as people, places, things, and events. They can also have relationships with each other, forming networks and connections that represent the complex web of information and knowledge that exist in our world.
+
+If you're looking for a more detailed list or specific examples of organizations present in a particular context (e.g., industry, region), I'd be happy to try and provide more general information.
+
+--- PIPELINE RAG (Génération SPARQL) ---
+
+[SPARQL Query Used]
+----------------------------------------
+prefix rdfs: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix owl: <http://www.openwebdata.org/ontology/>
+prefix wikiba: <http://wikiba.se/>
+
+SELECT ?org
+WHERE {
+  ?org owl:type owl:BestRank.
+}
+----------------------------------------
+[Repaired via LLM?] True
+
+[!] Query executed successfully but returned 0 results.
+
+> Posez votre question : Find all subjects that have a type of Organization using the URIs from the schema.
+
+--- BASELINE (LLM pur sans RAG) ---
+To find all subjects with a specific organization using Uniform Resource Identifiers (URIs) from the schema, you can follow these steps:
+
+1. Identify the relevant schema and its URIs.
+2. Search for subjects in each schema's URI that match an organizational unit (OU).
+3. Filter results to only include subjects with organizations.
+
+Here are some examples of schemas and their URIs that contain organization information:
+
+* IANA RFC 4120: `urn:ietf:params:xml:schema:organization`
+* IETF RFC 7647: `urn:ietf:params:xml:schema:organizationalunit`
+
+You can use a query language like NTP (Netgroup) to search for subjects with an organizational unit. For example:
+
+```ntp
+GET urn:ietf:params:xml:schema:organization/subject?query=select * from subject where organization=$1;
+```
+Replace `$1` with the desired organizational unit string.
+
+If you have a specific schema in mind, I can help you construct the query using that schema's URI.
+
+--- PIPELINE RAG (Génération SPARQL) ---
+
+[!] Execution Error: SPARQL Execution Error: Expected {SelectQuery | ConstructQuery | DescribeQuery | AskQuery}, found '<'  (at char 0), (line:1, col:1)
+
+[SPARQL Query Used]
+----------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE SPARQL-DATA PUBLIC "-//SPARQL protocol//EN" "http://www.w3.org/2005/sparl-data#1.0">
+<sparql:doc type="SPARQLDocument"><sparql:header><sparql:title>Subjects with Organization Type</sparql:title></sparql:header>       
+
+<sparql:query xmlns:sparql="http://www.w3.org/2005/sparl" xmlns:owl="http://www.w3.org/2002/07/owl#">
+  <sparsql:select>
+    <sparsql:where>
+      <sparsql:expr>for< owl:type </sparsql:expr>,< owl-type </sparsql:expr>,
+        ( s :< owl-type )
+        <owl:equivalentType rdf:resource="#http://purl.locity.org/wikiba/ontology/Organization</owl:equivalentType>
+      </sparsql:expr> where
+        ( s :< owl-type >)
+      </sparsql:expr></sparsql:where>
+    </sparsql:select>
+  </sparql:query>
+</sparql:doc>
+----------------------------------------
+[Repaired via LLM?] True
+
+[Results]
+
+----------------------------------------
+
+> Posez votre question : SELECT ?p WHERE { ?p http://www.w3.org/1999/02/22-rdf-syntax-ns#type http://mycustomkb.org/ontology/Person 
+}  
+
+--- BASELINE (LLM pur sans RAG) ---
+SELECT ?p WHERE { ?p a ?owl:Class . }
+
+--- PIPELINE RAG (Génération SPARQL) ---
+
+[!] Execution Error: SPARQL Execution Error: Expected {SelectQuery | ConstructQuery | DescribeQuery | AskQuery}, found '<'  (at char 0), (line:1, col:1)
+
+[SPARQL Query Used]
+----------------------------------------
+<?xml version="1.0"?>
+<!DOCTYPE sparql PUBLIC "-//Oasisopen•org•2004—•oasis•net—•public—"
+  "http://www.w3.org/2004/OASIS-SP/1.0/SPARQL-Engine.xsd"
+  "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+< sparql:version xmlns:sparql="http://www.w3.org/2005/sparkml#"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.w3.org/2005/sparkml#
+         http://www.w3.org/2005/sparkml/sparql.xsd">
+  < sparql:query xml:lang="en">
+    < sparql:select>
+      < sparql:param name="p"
+                  value="//mycustomkb.org/ontology/Person" />
+      < rdfs:as expr="?r"/>
+      < rdfs:label xml:lang="en">Person</rdfs:label>
+    </sparql:select>
+  </sparql:query>
+
+  < sparql:exprQuery>
+    <?xml version="1.0"?>
+    <!DOCTYPE expr-result PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+                            "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+    <expr-result xmlns:xs="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:xs2="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance
+         http://www.w3.org/2001/XMLSchema.xsd">
+      < xs2:boolean>true</xs2:boolean>
+    </expr-result>
+
+  </sparql:exprQuery>
+  < sparql:head xml:lang="en"/>
+  < sparql:query result="exprresult" xmlns:sparql2="http://www.w3.org/2005/sparkml#"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.w3.org/2005/sparkml#
+         http://www.w3.org/2005/sparkml/sparql2.xsd">
+    < sparql:exprQuery expr="# expr result
+----------------------------------------
+[Repaired via LLM?] True
+
+[Results]
+
+----------------------------------------
+
+> Posez votre question : Show me 5 subjects from the graph. Only use the SPARQL keyword SELECT. Do not use XML.
+
+--- BASELINE (LLM pur sans RAG) ---
+SELECT :id :name :age FROM ( SELECT :id AS "column1", :name AS "column2", :age AS "column3" FROM :table ) t WHERE :table.[:type] = 'some_value'
+
+--- PIPELINE RAG (Génération SPARQL) ---
+
+[!] Execution Error: SPARQL Execution Error: Expected SelectQuery, found 'FOR'  (at char 116), (line:5, col:3)
+
+[SPARQL Query Used]
+----------------------------------------
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX wikiba: <http://wikiba.se/ontology#>
+
+SELECT ?s ?p ?o WHERE {
+  FOR ?r1 ?r2 ?c1 ?c2
+  START-FF:owl.ranks(?r1) ?r1;
+  START-FF:owl.ranksForType(?r1 owl.:?class) ?r1;
+  FOR ?r3 ?r4 ?o1 ?o2
+  WHERE {
+    <http://www.wikiba.se/ontology#P31> ?s owl.:?class.
+    <http://wikiba.se/ontology#rank_inverse> ?p owl.:?class.
+    ?o1 wikiba:P?:?o2.
+    FOR ?r5 ?r6
+    WHERE {
+      <http://www.wikiba.se/ontology#P463} ?s ?p ?o1;
+      <http://wikiba.se/ontology#rank_inverse> ?p owl.:?class.
+      ?o2 wikiba:P?:?o2.
+      ?o1 wikiba:P?:?o3.
+    }
+  }
+}
+----------------------------------------
+[Repaired via LLM?] True
+
+[Results]
+
+----------------------------------------
+
+> Posez votre question : Show me 10 triples from the graph.
+
+--- BASELINE (LLM pur sans RAG) ---
+I'm not capable of displaying images or graphs. However, I can provide you with a list of 10 triples that can be used to form a simple graph for demonstration purposes.
+
+Here are 10 triples:
+
+1. (A, B, C) - A triangle with vertices A and B connected by an edge to vertex C
+2. (A, D, E) - A triangle with vertices A and D connected by an edge to vertex E
+3. (B, C, F) - A triangle with vertices B and C connected by an edge to vertex F
+4. (C, D, G) - A triangle with vertices C and D connected by an edge to vertex G
+5. (D, E, H) - A triangle with vertices D and E connected by an edge to vertex H
+6. (E, F, I) - A triangle with vertices E and F connected by an edge to vertex I
+7. (F, G, J) - A triangle with vertices F and G connected by an edge to vertex J
+8. (G, H, K) - A triangle with vertices G and H connected by an edge to vertex K
+9. (H, I, L) - A triangle with vertices H and I connected by an edge to vertex L
+10. (I, J, M) - A triangle with vertices I and J connected by an edge to vertex M
+
+These triples can be used to form a simple graph with multiple edges between non-adjacent vertices.
+
+--- PIPELINE RAG (Génération SPARQL) ---
+
+[!] Execution Error: SPARQL Execution Error: Expected {SelectQuery | ConstructQuery | DescribeQuery | AskQuery}, found '<'  (at char 0), (line:1, col:1)
+
+[SPARQL Query Used]
+----------------------------------------
+<?xml version="1.0"?>
+<!DOCTYPE sparql xmlns:owl="<http://www.w3.org/2002/07/owl#">
+<!DOCTYPE sparql xmlns:rdf<a namespace="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<!DOCTYPE sparql xmlns:xsd("<http://www.w3.org/2001/XMLSchema#>")]
+
+<?xml:stylesheet version="1.0" xmlns:sparql="http://example.org/sparql">
+
+<spage>
+    <select xmlns:aq="http://purl.org/niso/aq/">
+        <a:select>
+            <a:freq>100</a:freq> <!-- query frequency -->
+            <aq:type>http://www.w3.org/2002/07/owl#Thing</aq:type>
+            <aq:format>aqt:sparql</aq:format>
+
+            <?xml version="1.0" encoding="UTF-8"?>
+            <query xmlns:aq="http://purl.org/niso/aq/">
+                <a:select>
+                    <a:expr>
+                        <?xml version="1.0" encoding="UTF-8"?>
+                        <owl:sameAs rdf:resource="<?xml version="1.0" encoding="UTF-8"?><rdf:type aq:Type<?xml version="1.0" encoding="UTF-8?><?xml version="1.0" encoding="UTF-8??>"/>
+                        </owl:sameAs>
+                        <?xml version="1.0" encoding="UTF-8"?>
+                        <a:expr>
+                            <?xml version="1.0" encoding="UTF-8"?>
+                            <rdf:Description rdf:about="<?xml version="1.0" encoding="UTF-8?><?xml version="1.0" encoding="UTF-8?"?>
+                                <owl:Class aq:Class<?xml version="1.0" encoding="UTF-8?><?xml version="1.0" encoding="UTF-8?
+                            </a:expr>
+                        <?xml version="1.0" encoding="UTF-8"?>
+                            <owl:rank rdfs:label "BestRank"/>
+                        <?xml version="1.0" encoding="UTF-8"?>
+                            <owl:rankInverse rdfs:label "Not BestRank"/>
+                        <?xml version="1.0" encoding="UTF-8"?>
+                        </a:expr>
+                    </a:expr>
+                </a:select>
+            </query>
+
+        </a:select>
+    </aq:type>
+    <a:limit>10</a:limit>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <owl:sameAs rdf:resource="<?xml version="1.0" encoding="UTF-8?"><?xml version="1.0" encoding="UTF-8?"?>
+        <rdf:type aq:Type<?xml version="1.0" encoding="UTF-8?><?xml version="1.0" encoding="UTF-8?
+    </owl:sameAs>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <a:expr>
+        <?xml version="1.0" encoding="UTF-8"?>
+        <rdf:Description rdf:about="<?xml version="1.0" encoding="UTF-8?"><?xml version="1.0" encoding="UTF-8?
+            <owl:Class aq:Class<?xml version="1.0" encoding="UTF-8?>
+            <owl:rank rdfs:label "BestRank"/>
+            <?xml version="1.0" encoding="UTF-8"?>
+            <owl:rankInverse rdfs:label "Not BestRank"/>
+        </a:expr>
+    <?xml version="1.0" encoding="UTF-8"?>
+        <?xml version="1.0" encoding="UTF-8"?>
+        <owl:Property rdf:about="<?xml version="1.0" encoding="UTF-8?
+            P31 aq:Class<?xml version="1.0" encoding="UTF-8?"><?xml version="1.0" encoding="UTF-8?"
+        </owl:Property>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+        <owl:Property rdfs:label "WasDerivedFrom"/>
+        <?xml version="1.0" encoding="UTF-8"?>
+        <owl:PropertyInverse rdfs:label "Not WasDerivedFrom"/>
+    <?xml version="1.0" encoding="UTF-8"?>
+        </a:expr>
+    </a:expr>
+</spage>
+
+<query xmlns:aq="http://purl.org/niso/aq/">
+    <select>
+        <?xml version="1.0" encoding="UTF-8"?>
+        <owl:sameAs rdf:resource="<?xml version="1.0" encoding="UTF-8?"><?xml version="1.0" encoding="UTF-8?"
+        <rdf:type aq:Type<?xml version="1.0" encoding="UTF-8?>
+    </owl:sameAs>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <query xmlns:aq="http://purl.org/niso/aq/">
+        <select>
+            <?xml version="1.0" encoding="UTF-8"?>
+            <owl:rank rdfs:label "BestRank"/>
+            <?xml version="1.0" encoding="UTF-8"?>
+            <owl:rankInverse rdfs:label "Not BestRank"/>
+            <?xml version="1.0" encoding="UTF-8"?>
+        </owl:rank>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+        <owl:Property rdf:about="<?xml version="1.0" encoding="UTF-8?"><?xml version="1.0" encoding="UTF-8?>
+            P31 aq:Class<?xml version="1.0" encoding="UTF-8?>
+    </owl:Property>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+        <owl:Property rdfs:label "WasDerivedFrom"/>
+        <?xml version="1.0" encoding="UTF-8"?>
+        <owl:PropertyInverse rdfs:label "Not WasDerivedFrom"/>
+    <?xml version="1.0" encoding="UTF-8"?>
+    </query>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <owl:sameAs rdf:resource="<?xml version="1.0" encoding="UTF-8?>
+        <rdf:type aq:Type<?xml version="1.0" encoding="UTF-8?>
+    </owl:sameAs>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <query xmlns:aq="http://purl.org/niso/aq/">
+        <select>
+            <?xml version="1.0" encoding="UTF-8"?>
+            <owl:rank rdfs:label "BestRank"/>
+            <?xml version="1.0" encoding="UTF-8"?>
+            <owl:rankInverse rdfs:label "Not BestRank"/>
+        </owl:rank>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+        <owl:Property rdf:about="<?xml version="1.0" encoding="UTF-8?"><?xml version="1.0" encoding="UTF-8?>
+            P31 aq:Class<?xml version="1.0" encoding="UTF-8?>
+    </owl:Property>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+        <owl:Property rdfs:label "WasDerivedFrom"/>
+        <?xml version="1.0" encoding="UTF-8"?>
+        <owl:PropertyInverse rdfs:label "Not WasDerivedFrom"/>
+    <?xml version="1.0" encoding="UTF-8"?>
+    </query>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <owl:sameAs rdf:resource="<?xml version="1.0" encoding="UTF-8?"><?xml version="1.0" encoding="UTF-8?"
+        <rdf:type aq:Type<?xml version="1.0" encoding="UTF-8?>
+    </owl:sameAs>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <query xmlns:aq="http://purl.org/niso/aq/">
+        <select>
+            <?xml version="1.0" encoding="UTF-8"?>
+            <owl:rank rdfs:label "BestRank"/>
+            <?xml version="1.0" encoding="UTF-8"?>
+            <owl:rankInverse rdfs:label "Not BestRank"/>
+        </owl:rank>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+        <owl:Property rdf:about="<?xml version="1.0" encoding="UTF-8?"><?xml version="1.0" encoding="UTF-8?"
+            P31 aq:Class<?xml version="1.0" encoding="UTF-8?>
+    </owl:Property>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+        <owl:Property rdfs:label "WasDerivedFrom"/>
+        <?xml version="1.0" encoding="UTF-8"?>
+        <owl:PropertyInverse rdfs:label "Not WasDerivedFrom"/>
+    <?xml version="1.0" encoding="UTF-8"?>
+    </query>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <owl:sameAs rdf:resource="<?xml version="1.0" encoding="UTF-8?>
+        <rdf:type aq:Type<?xml version="1.0" encoding="UTF-8?>
+    </owl:sameAs>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <query xmlns:aq="http://purl.org/niso/aq/">
+        <select>
+            <?xml version="1.0" encoding="UTF-8"?>
+            <owl:rank rdfs:label "BestRank"/>
+            <?xml version="1.0" encoding="UTF-8"?>
+            <owl:rankInverse rdfs:label "Not BestRank"/>
+        </owl:rank>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+        <owl:Property rdf:about="<?xml version="1.0" encoding="UTF-8?"><?xml version="1.0" encoding="UTF-8?>
+            P31 aq:Class<?xml version="1.0" encoding="UTF-8?>
+    </owl:Property>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+        <owl:Property rdfs:label "WasDerivedFrom"/>
+        <?xml version="1.0" encoding="UTF-8"?>
+        <owl:PropertyInverse rdfs:label "Not WasDerivedFrom"/>
+    <?xml version="1.0" encoding="UTF-8"?>
+    </query>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <owl:sameAs rdf:resource="<?xml version="1.0" encoding="UTF-8?>
+        <rdf:type aq:Type<?xml version="1.0" encoding="UTF-8?>
+    </owl:sameAs>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <query xmlns:aq="http://purl.org/niso/aq/">
+        <select>
+            <?xml version="1.0" encoding="UTF-8"?>
+            <owl:rank rdfs:label "BestRank"/>
+            <?xml version="1.0" encoding="UTF-8"?>
+            <owl:rankInverse rdfs:label "Not BestRank"/>
+        </owl:rank>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+        <owl:Property rdf:about="<?xml version="1.0" encoding="UTF-8?"><?xml version="1.0" encoding="UTF-8?"
+            P31 aq:Class<?xml version="1.0" encoding="UTF-8?>
+    </owl:Property>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+        <owl:Property rdfs:label "WasDerivedFrom"/>
+        <?xml version="1.0" encoding="UTF-8"?>
+        <owl:PropertyInverse rdfs:label "Not WasDerivedFrom"/>
+    <?xml version="1.0" encoding="UTF-8"?>
+    </query>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <owl:sameAs rdf:resource="<?xml version="1.0" encoding="UTF-8?>
+        <rdf:type aq:Type<?xml version="1.0" encoding="UTF-8?>
+    </owl:sameAs>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <query xmlns:aq="http://purl.org/niso/aq/">
+        <select>
+            <?xml version="1.0" encoding="UTF-8"?>
+            <owl:rank rdfs:label "BestRank"/>
+            <?xml version="1.0" encoding="UTF-8"?>
+            <owl:rankInverse rdfs:label "Not BestRank"/>
+        </owl:rank>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+        <owl:Property rdf:about="<?xml version="1.0" encoding="UTF-8?"><?xml version="1.0" encoding="UTF-8?>
+            P31 aq:Class<?xml version="1.0" encoding="UTF-8?>
+    </owl:Property>
+
+    <?xml version="1.0" encoding="UTF-8"?>
+        <owl:Property rdfs:label "WasDerivedFrom"/>
+        <?xml version="1.0" encoding="UTF-8"?>
+        <owl:PropertyInverse rdfs:label "Not WasDerivedFrom"/>
+    <?xml version="1.0" encoding="UTF-8"?>
+    </query>
+
+</spage>
+----------------------------------------
+[Repaired via LLM?] True
+
+[Results]
+
+----------------------------------------
+
+> Posez votre question : exit
+Fermeture du système RAG. Au revoir !
+

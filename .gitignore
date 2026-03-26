@@ -12,17 +12,3 @@ env/
 # Jupyter
 .ipynb_checkpoints/
 *.ipynb_checkpoints
-
-# Data & large files
-*.nt
-*.owl
-data/raw/*.jsonl
-data/raw/*.csv
-
-# OS
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/

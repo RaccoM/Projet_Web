@@ -1,14 +1,47 @@
 @prefix myonto: <http://mycustomkb.org/ontology/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix wdt: <http://www.wikidata.org/prop/direct/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-myonto:NewEntity rdfs:subClassOf myonto:Gpe,
-        myonto:Org,
-        myonto:Person .
+# ── Classes ──────────────────────────────────────────────
+myonto:Person a owl:Class ;
+    rdfs:label "Person" ;
+    rdfs:comment "A human individual extracted from web sources." .
 
-myonto:Gpe a owl:Class .
+myonto:Org a owl:Class ;
+    rdfs:label "Organization" ;
+    rdfs:comment "An organization, company, or institution." .
 
-myonto:Org a owl:Class .
+myonto:Gpe a owl:Class ;
+    rdfs:label "GeopoliticalEntity" ;
+    rdfs:comment "A geopolitical entity such as a country, city, or region." .
 
-myonto:Person a owl:Class .
+myonto:NewEntity a owl:Class ;
+    rdfs:label "NewEntity" ;
+    rdfs:comment "Entity not found in Wikidata — private KB entity." ;
+    rdfs:subClassOf myonto:Gpe, myonto:Org, myonto:Person .
 
+# ── Properties with domain/range ─────────────────────────
+myonto:isRelatedTo a owl:ObjectProperty ;
+    rdfs:label "isRelatedTo" ;
+    rdfs:domain owl:Thing ;
+    rdfs:range owl:Thing ;
+    rdfs:comment "Generic relation between two entities." .
+
+myonto:hasField a owl:ObjectProperty ;
+    rdfs:label "hasField" ;
+    rdfs:domain myonto:Org ;
+    rdfs:range owl:Thing ;
+    rdfs:comment "Domain or field of work of an organization." .
+
+myonto:hasPartnership a owl:ObjectProperty ;
+    rdfs:label "hasPartnership" ;
+    rdfs:domain myonto:Org ;
+    rdfs:range myonto:Org ;
+    rdfs:comment "Partnership relation between two organizations." .
+
+# ── Predicate Alignment (owl:equivalentProperty) ──────────
+myonto:isRelatedTo owl:equivalentProperty wdt:P2283 .
+myonto:hasField owl:equivalentProperty wdt:P101 .

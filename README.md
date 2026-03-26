@@ -14,11 +14,10 @@ This repository contains a complete end-to-end **Knowledge Engineering pipeline*
 
 ---
 
-## 💻 Hardware & Software Requirements
+## 💻 Hardware Requirements
 
 * **OS:** Windows / Linux / macOS
-* **Hardware:** * Minimum **8GB RAM** (16GB recommended for PyKEEN embedding training and local LLM execution).
-    * A dedicated **GPU (CUDA)** is highly recommended for faster KGE training but not strictly required.
+* **Hardware:** * Minimum **8GB RAM**.
 * **Software:**
     * **Python 3.9+**
     * **Ollama** (for running the local SLM)
@@ -29,32 +28,22 @@ This repository contains a complete end-to-end **Knowledge Engineering pipeline*
 
 ### 1. Clone the repository
 ```bash
-git clone [https://github.com/YourUsername/YourRepoName.git](https://github.com/YourUsername/YourRepoName.git)
-cd YourRepoName
+git clone https://github.com/RaccoM/Projet_Web.git
+cd Projet_Web
 ```
 
 ### 2. Set up the Python Environment
-Il est fortement recommandé d'utiliser un environnement virtuel :
+I used Google Colab with its GPU to execute the cells of the notebook for faster training.
 
-**Sur Linux / macOS :**
-```bash
-python -m venv venv
-source venv/bin/activate
-```
+Make sure you have **Python** installed
 
-**Sur Windows :**
-```powershell
-python -m venv venv
-venv\Scripts\activate
-```
-
-**Installer les dépendances :**
+**Install Requirements :**
 ```bash
 pip install -r requirements.txt
 ```
 
 ### 3. Install & Download the Local LLM
-Assure-toi qu'**Ollama** est installé sur ta machine, puis télécharge le modèle **Llama 3.2** (1B parameters) requis :
+Make sure you have **Ollama** installed, then dawnload **Llama 3.2** (1B parameters) :
 
 ```bash
 ollama pull llama3.2:1b
@@ -74,8 +63,8 @@ All data acquisition, alignment, SWRL rule execution, and embedding evaluations 
 2. **Execute the pipeline:** Open `src/Web.ipynb` and run the cells sequentially.
 
 > [!NOTE]
-> The data outputs (such as `expanded_kb.nt` and KGE datasets) are already provided in the `data/` folder for reproducibility.
-
+> The data outputs (such as KGE datasets) are already provided in the `data/` folder, except `expanded_kb.nt` which are in the
+`src/` folder with the notebook.
 ---
 
 ### Phase 5: Semantic RAG Demo (NL to SPARQL)
@@ -93,4 +82,3 @@ The RAG system translates Natural Language into SPARQL queries, executes them ag
 ## 📸 Demo Screenshot
 
 ![Demo Screenshot](docs/screenshot.png)
-*(Note: Replace this placeholder with an actual screenshot of your terminal showing a successful RAG query and self-repair loop).*

@@ -1,32 +1,31 @@
-# lab_rag_sparql_gen.py
-
 import json
 import re
 import requests
 import rdflib
+from pathlib import Path
 from rdflib.plugins.sparql.processor import SPARQLResult
 
-# ==========================================
 # CONFIGURATION
-# ==========================================
 OLLAMA_URL = "http://localhost:11434/api/generate"
 MODEL_NAME = "llama3.2:1b"
-KB_FILE = "expanded_kb.nt"
 
-# ==========================================
-# FONCTIONS DE BASE
-# ==========================================
+# We get the KB file
+SCRIPT_DIR = Path(__file__).parent
+KB_FILE = SCRIPT_DIR.parent / "data" / "kg_artifacts" / "expanded_kb.nt"
+
+
+# CORE FUNCTIONS
 def load_graph(file_path: str) -> rdflib.Graph:
-    print(f"[*] Chargement du Knowledge Graph depuis {file_path}...")
+    print(f" > Loading Knowledge Graph from {file_path}...")
     g = rdflib.Graph()
     g.parse(file_path, format="nt")
-    print(f"[*] Graphe chargé avec {len(g)} triplets.")
+    print(f" > Graph loaded with {len(g)} triples.")
     return g
 
 def extract_schema(g: rdflib.Graph) -> str:
-    print("[*] Extraction du schéma (Prédicats et Classes)...")
+    print(" > Extracting schema (Predicates and Classes)...")
     
-    # Extraction des prédicats les plus fréquents (limité à 50 pour le contexte LLM)
+    # Extract the most frequent predicates (limited to 50 for LLM context)
     res_p = g.query("""
         SELECT ?p (COUNT(?s) AS ?count) 
         WHERE { ?s ?p ?o } 
@@ -36,7 +35,7 @@ def extract_schema(g: rdflib.Graph) -> str:
     """)
     predicates = [str(r[0]) for r in res_p]
 
-    # Extraction des classes (types)
+    # Extract classes (types)
     res_c = g.query("""
         SELECT DISTINCT ?c 
         WHERE { ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?c } 
@@ -60,11 +59,9 @@ def ask_local_llm(prompt: str) -> str:
         response.raise_for_status()
         return response.json().get("response", "").strip()
     except requests.exceptions.RequestException as e:
-        return f"Erreur de communication avec Ollama: {str(e)}"
+        return f"Communication error with Ollama: {str(e)}"
 
-# ==========================================
-# PIPELINE RAG & SPARQL
-# ==========================================
+# RAG & SPARQL PIPELINE
 def extract_sparql_from_text(text: str) -> str:
     match = re.search(r'```sparql(.*?)```', text, re.DOTALL | re.IGNORECASE)
     if match:
@@ -153,12 +150,10 @@ def answer_no_rag(question: str) -> str:
     prompt = f"Answer the following question directly and concisely to the best of your knowledge:\n\nQuestion: {question}"
     return ask_local_llm(prompt)
 
-# ==========================================
-# INTERFACE CLI
-# ==========================================
+# CLI INTERFACE
 def pretty_print_result(result: dict):
     if result.get("error"):
-        print(f"\n[!] Execution Error: {result['error']}")
+        print(f"\n > Execution Error: {result['error']}")
     
     print("\n[SPARQL Query Used]")
     print("-" * 40)
@@ -170,7 +165,7 @@ def pretty_print_result(result: dict):
     rows = result.get("rows", [])
     
     if not rows and not result.get("error"):
-        print("\n[!] Query executed successfully but returned 0 results.")
+        print("\n > Query executed successfully but returned 0 results.")
         return
 
     print("\n[Results]")
@@ -183,33 +178,31 @@ def pretty_print_result(result: dict):
         print(f"... (showing 20 out of {len(rows)} results)")
 
 def main():
-    print("="*60)
-    print("🤖 Semantic RAG Chatbot - Initialisation")
-    print("="*60)
+    print("\n ===== Semantic RAG Chatbot - Initialization =====\n")
     
     try:
         g = load_graph(KB_FILE)
     except Exception as e:
-        print(f"[!] Erreur critique: Impossible de charger le graphe '{KB_FILE}'.\nDétails: {e}")
+        print(f" > Critical Error: Unable to load the graph '{KB_FILE}'.\nDetails: {e}")
         return
 
     schema = extract_schema(g)
     
-    print("\nLe système est prêt. Tapez 'exit' ou 'quit' pour quitter.")
+    print("\nThe system is ready. Type 'exit' or 'quit' to exit.")
     print("="*60)
 
     while True:
-        question = input("\n> Posez votre question : ").strip()
+        question = input("\n > Ask your question: ").strip()
         if question.lower() in ['exit', 'quit']:
-            print("Fermeture du système RAG. Au revoir !")
+            print("Closing the RAG system. Goodbye!")
             break
         if not question:
             continue
             
-        print("\n--- BASELINE (LLM pur sans RAG) ---")
+        print("\n --- BASELINE (Pure LLM without RAG) ---")
         print(answer_no_rag(question))
         
-        print("\n--- PIPELINE RAG (Génération SPARQL) ---")
+        print("\n --- RAG PIPELINE (SPARQL Generation) ---")
         rag_res = rag_pipeline(g, schema, question)
         pretty_print_result(rag_res)
 

@@ -56,7 +56,7 @@ ollama pull llama3.2:1b
 ### Phase 1 to 4: Graph Construction, SWRL, and KGE
 All data acquisition, alignment, SWRL rule execution, and embedding evaluations are contained within a single Jupyter Notebook.
 
-1. **Launch Jupyter:**
+1. **Lunch in Google Colab or Launch Jupyter:**
    ```bash
    jupyter notebook
    ```
